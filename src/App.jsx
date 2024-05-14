@@ -1,19 +1,51 @@
 import { useState } from 'react';
 import './App.css'
 import logo from './assets/logo.png';
+import axios from 'axios';
+import { useEffect } from 'react';
+
+
 function App() {
 
   const [inputAmount, setInputAmount] = useState(0);
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("LKR");
-  const [baseAmount, setBaseAmount] = useState(null);
-  const [conertedAmount, setCOnvertedAmount] = useState(null);
+  const [exchangeRate, setExchangeRate] = useState(null);
+  const [conertedAmount, setConvertedAmount] = useState(null);
+
+
+  const getExchangeRate = async () => {
+
+    const apiUrl = `https://api.exchangerate-api.com/v4/latest/${fromCurrency}`;
+
+    try {
+      const res = await axios.get(apiUrl);
+      // console.log(res);
+
+      setExchangeRate(res.data.rates[toCurrency]);
+
+    } catch (error) {
+      console.log("API Fetch error: ", error.message);
+    }
+  }
+
+  useEffect(() => {
+    getExchangeRate();
+  }, [fromCurrency, toCurrency]);
+
+  useEffect(() => {
+    if (exchangeRate !== null) {
+      setConvertedAmount((inputAmount * exchangeRate).toFixed(2));
+    }
+  }, [inputAmount, exchangeRate]);
 
   const handleInput = (e) => {
     const inputValue = parseFloat(e.target.value);
     setInputAmount(isNaN(inputValue) ? 0 : inputValue);
-
   }
+
+
+
 
   // console.log("input:", inputAmount);
   // console.log("from:", fromCurrency);
@@ -51,8 +83,8 @@ function App() {
           </select>
         </div>
         <div className="result">
-          <p>1 {toCurrency} is <span>{baseAmount}</span> {fromCurrency}</p>
-          <p>Amount is: <span>{conertedAmount}</span> LKR</p>
+          <p>1 {fromCurrency} is <span>{exchangeRate}</span> {toCurrency}</p>
+          <p>Amount is: <span>{conertedAmount}</span> {toCurrency}</p>
         </div>
       </div>
     </>

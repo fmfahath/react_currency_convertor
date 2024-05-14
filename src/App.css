@@ -74,10 +74,11 @@ select:focus {
   margin-top: 40px;
   text-align: center;
   color: rgb(29, 46, 146);
+  font-size: 16px;
 }
 
 .result p:first-child {
-  font-size: 14px;
+  font-size: 12px;
   margin-bottom: 5px;
   color: #524f4f;
 }
